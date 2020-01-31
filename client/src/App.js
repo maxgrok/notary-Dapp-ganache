@@ -6,7 +6,7 @@ import ProofOfExistenceContract from './contracts/ProofOfExistence.json';
 
 class App extends Component {
 
-  state = { networkId:1580504870973 , web3: null, ipfsHash: null, buffer: null};  
+  state = { web3: null, ipfsHash: null, buffer: null};  
 
   componentDidMount = async () => {
     try {
