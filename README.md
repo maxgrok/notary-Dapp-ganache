@@ -4,7 +4,7 @@ App Demo: http://bit.ly/31cUDmb
 </em>
 Rinkeby contract deployed: https://rinkeby.etherscan.io/address/0x5b0c51dDA0263bBffEb3093D7F664305FB075e08/ 
 
-![ganache-notary-dapp-demo](http://www.giphy.com/gifs/eMPNozWnUerjGxnVvO.gif)
+![ganache-notary-dapp-demo](https://media.giphy.com/media/XHuqn9rTrup0UqEp2w/giphy.gif)
 
 ## What does this project do? 
 
