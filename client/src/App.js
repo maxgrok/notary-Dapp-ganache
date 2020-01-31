@@ -37,8 +37,7 @@ class App extends Component {
   notarize(ipfsHash, {...props}){
     const { accounts, contract } = this.state;
     console.log(accounts);
-     contract.methods.notarize(ipfsHash).send({ from: "0xA951C2baa16caC2ce1128f6b608F13c164923e37" });
-    console.log(ipfsHash + "= ipfsHash within notarize() ");
+     contract.methods.notarize(ipfsHash).send({ from: accounts[0] });
   }
 
   awaitingNotarizeToast(){
