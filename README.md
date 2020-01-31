@@ -1,5 +1,5 @@
 # README
-App: http://bit.ly/36DWMbW
+App: 
 
 Rinkeby contract deployed: https://rinkeby.etherscan.io/address/0x9414edDe4295484ceb3836B8fce48f796FCDB9c4/  
 ## What does this project do? 
@@ -19,7 +19,7 @@ Update .secret file with your Mnemonic for your MetaMask account and set your Me
 Run `ganache-cli -m 'yourMnemonichere'` and `truffle compile && truffle migrate --network development` to deploy your ProofOfExistence contract to your local blockchain. 
 
 ### 3rd
-Start the app from `client/` directory with `npm start`
+Install dependencies in `client/` directory with `npm i`, then run `npm start` to start application.
 
 ### 4th
 Navigate to `localhost:3000` and upload and notarize documents with one click of a button!
