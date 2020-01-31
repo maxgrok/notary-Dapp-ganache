@@ -1,14 +1,16 @@
 # README
 App Demo: http://bit.ly/31cUDmb
+<em>Pre-requisites: Internet Connection, Truffle, NPM, Node.js
 
 Rinkeby contract deployed: https://rinkeby.etherscan.io/address/0x5b0c51dDA0263bBffEb3093D7F664305FB075e08/ 
 
-![]()
+![ganache-notary-dapp-demo](http://www.giphy.com/gifs/eMPNozWnUerjGxnVvO)
+
 ## What does this project do? 
 
 This is a final project for Consensys Academy Blockchain Developer Bootcamp. It allows users to upload a file to IPFS and notarize it with their MetaMask Local Ganache Ethereum Account and post it on Rinkeby Testnet with the simple click of a single deploy button. Complete with toast messages for user status updates. 
 
-## How to I Set It Up Locally? 
+## How Do I Set It Up Locally? 
 
 ### Pre-Requisites
 
