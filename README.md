@@ -1,8 +1,7 @@
 # README
 App Demo: http://bit.ly/31cUDmb
 
-Rinkeby contract deployed: https://rinkeby.etherscan.io/address/0x9414edDe4295484ceb3836B8fce48f796FCDB9c4/  
-
+Rinkeby contract deployed: https://rinkeby.etherscan.io/address/0x5b0c51dDA0263bBffEb3093D7F664305FB075e08/ 
 
 ![]()
 ## What does this project do? 
