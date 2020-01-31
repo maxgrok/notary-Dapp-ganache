@@ -1,30 +1,19 @@
 import React, { Component } from "react";
 import ipfs from './ipfs';
 import getWeb3 from './getWeb3';
-import { Flex,ToastMessage, Button, Link, Card, Heading, Text, ThemeProvider, Box} from 'rimble-ui';
+import { EthAddress,ToastMessage,Input, Button, Link, Card, Heading, Text} from 'rimble-ui';
 import ProofOfExistenceContract from './contracts/ProofOfExistence.json';
 
 class App extends Component {
 
-  state = { route: "default"};
-
-  config = {
-    accountBalanceMinimum: 0.001,
-    requiredNetwork: 4
-  }
-
-
-  showRoute = route => {
-    this.setState({
-      route
-    });
-  };
+  state = { networkId: null, contract: null, web3: null, ipfsHash: null, buffer: null, accounts: null};
 
   componentDidMount = async () => {
     try {
      // Get network provider and web3 instance.
       const web3 = await getWeb3();
 
+      const accounts = await web3.eth.getAccounts();
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
       const deployedNetwork = ProofOfExistenceContract.networks[networkId];
@@ -35,7 +24,7 @@ class App extends Component {
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ networkId, web3 });
+      this.setState({ networkId, web3, accounts, contract: instance });
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -45,109 +34,108 @@ class App extends Component {
     }
    };
 
-  captureFile = (event)=>{
-    event.stopPropagation();
+  notarize(ipfsHash, {...props}){
+    const { accounts, contract } = this.state;
+      contract.methods.notarize(ipfsHash).send({ from: accounts[0] });
+      console.log(ipfsHash + "= ipfsHash within notarize() ");
+  }
+
+  awaitingNotarizeToast(){
+    if(this.state.ipfsHash){
+      return (<div>
+        {window.toastProvider.addMessage("Awaiting your confirmation through MetaMask", {
+        secondaryMessage: "Your document "+ this.state.ipfsHash + " is will be notarized.",
+        actionHref:"",
+        actionText: "",
+        variant: "processing"})}
+      </div>
+      )
+    }
+  }
+//IPFS Functions     
+
+  //captures file uploaded through Files API 
+    captureFile = (event)=>{
     event.preventDefault();
     const file = event.target.files[0];
     let reader = new window.FileReader();
     reader.readAsArrayBuffer(file);
     reader.onloadend =() => this.convertToBuffer(reader);
   }
-
-  async notarize(){
-    const { accounts, contract } = this.state;
-    let fileName = document.getElementById('file').files[0].name;
-    await contract.methods.notarize(fileName).send({ from: accounts[0] });
+  //converts file to buffer to upload to IPFS
+convertToBuffer = async(reader) =>{
+    const buffer = await Buffer.from(reader.result);
+    this.setState({ buffer })
   }
 
-  async checkDocument(){
-    const { contract } = this.state;
-    let fileName = document.getElementById('file').files[0].name;
-    const response = await contract.methods.checkDocument(fileName).call();
-    this.setState({ storageValue: response});
-  }
-
-  checkDocumentToast(){
-    const { contract } = this.state;
-    let fileName = document.getElementById('file').files[0].name;
-    return (<div>
-        <ToastMessage.Provider ref={node => (window.toastProvider = node)} />
-        {window.toastProvider.addMessage("Verifying...", {
-        secondaryMessage: "Checking document is notarized",
-        actionHref:"",
-        actionText: "",
-        variant: "processing"})}
-      </div>
-      )
-  }
-
-  async ipfsHashCalculating() { 
-        return (<div>
-        <ToastMessage.Provider ref={node => (window.toastProvider = node)} />
-        {window.toastProvider.addMessage("IPFS Hash is being calculated...", {
-        secondaryMessage: "",
-        actionHref:"",
-        actionText: "",
-        variant: "processing"})}
-      </div>
-      )
-  }
-
-  async ipfsHash(){
-    await ipfs.add(this.state.buffer, (err, ipfsHash)=>{
+ //uploads document file to IPFS and sets the IPFS Hash in response to ipfsHash
+  onIPFSSubmit = async() =>{
+     await ipfs.add(this.state.buffer, (err, ipfsHash)=>{
       console.log(err, ipfsHash);
-      this.setState({ipfsHash:ipfsHash[0].hash});
-    }) 
+      this.setState({ipfsHash: ipfsHash[0].hash});
+      this.notarize(ipfsHash[0].hash);
+      this.awaitingNotarizeToast();
+    });
   }
-
-  notarizeToast(){
-    let fileName = document.getElementById('file').files[0].name;
-    if(fileName !=''){
-      return (<div>
-        <ToastMessage.Provider ref={node => (window.toastProvider = node)} />
-        {window.toastProvider.addMessage("Document is being notarized", {
-        secondaryMessage: "Your document "+ fileName + " is being notarized.",
-        actionHref:"",
-        actionText: "",
-        variant: "processing"})}
-      </div>
-      )
-    }
-    }
-
-  onClick = async(e) =>{
-    let fileName = document.getElementById('file').files[0].name;
-    let file = document.getElementById('file').files[0];
-  }
+//End of IPFS Functions
 
   render() {
     if (!this.state.web3) {
-      return <Heading.h2>Loading Web3, accounts, and contract...</Heading.h2>;
+
+      return  <Card maxWidth={'640px'} mx={'auto'} p={3} >
+      <Text>Loading Web3, accounts, and contract...</Text>
+      </Card>
     }
 
     return (
       <div className="App">
-        <h2>Proof Of Existence</h2>
-        <ToastMessage.Provider ref={node => (window.toastProvider = node)} />
-        <p> Click "Choose File" to add a file to notarize and upload to IPFS. </p>
-        <p>Once you choose a file, upload it to IPFS and notarize it with Ganache on your private blockchain!</p>
-        <br/>
-        <br/>
-        <form id="form" onSubmit={this.onClick}>
-          <input type="file" name="file" id="file" onChange={this.captureFile} />
-          <Button as="submit" mb={3} onClick={this.onClick}>Upload to IPFS and Notarize with Ganache</Button>
-          <br/>
-        </form>
-        <div>
-        <p>Save your IPFS Hash.</p>
-        <p>Your IPFS Hash is {this.state.ipfsHash}</p>
-        </div>
-        <ToastMessage.Success
-  my={3}
-  message={"Your IPFS Hash is: "+ this.state.ipfsHash}
-/>
-      </div>
-          )}
+      <ToastMessage.Provider ref={node => (window.toastProvider = node)} />
+      <Card maxWidth={'640px'} mx={'auto'} p={3} >
+                  <Heading.h2 mr={3}>
+                    <span role="img" aria-label="Waving hand">
+                      👋
+                    </span>
+                  </Heading.h2>
+                  <Text>
+                    Hi there, I'm Max. <br/><br/>This is my Proof of Existence Dapplication for the Consensys Academy Blockchain Bootcamp! <br/><br/> It can notarize any document you want to upload and place it on IPFS. Give it a whirl!
+                  </Text>
+                </Card>
+        <Card maxWidth={'640px'} mx={'auto'} p={3} >
+                  <Text>
+                    <strong>Warning: this Dapp only works on your local Ganache at port 8545.</strong>
+                  </Text>
+                </Card>
+        <Card maxWidth={'640px'} mx={'auto'} p={3} >
+        <Card maxWidth={'640px'} mx={'auto'} p={3} px={4}>
+                  <Text><strong>Step 1:</strong> Upload a File from your Computer!
+<br/><br/>
+                  You will see the button "Choose File..." update with your file's name upon selecting a file from your computer!
+<br/><br/>
+                  The application will not notarize or upload without this! <br/><br/>
+                  </Text>
+          <Input type="file" name="file" id="file" onChange={this.captureFile} />
+          </Card>
+          <br/><br/>
+          <Card maxWidth={'640px'} mx={'auto'} p={3} px={4}>
+           <Text><strong>Step 2:</strong> Click "Upload to IPFS and Notarize with Ganache" to upload your document to IPFS and notarize it. 
+                <br/><br/>
+                  You will see an update with your IPFS Hash and a link to the IPFS Browser to see your file! 
+                  <br/><br/><strong> Make sure you have Ganache running on port 8545, not 7545.</strong>
+                  <br/><br/>You will also be prompted by MetaMask to notarize the IPFS Hash of the document you uploaded. <br/><br/><strong>Please click "Confirm" in the MetaMask pop up after clicking this button</strong>
+                  </Text>
+         
+          <Button mb={3} onClick={async(e)=>{
+              e.preventDefault();
+              this.onIPFSSubmit();
+              }}>Upload to IPFS and Notarize with Ganache</Button>
+          </Card>
+          <Card maxWidth={'640px'} mx={'auto'} p={3} >
+          {this.state.ipfsHash ? <Text><strong>IPFS Hash for your file: <br/><EthAddress address={this.state.ipfsHash}/></strong> <br/><strong>To see the file on IPFS, go to the</strong> <Link href={'//ipfsbrowser.com/'} target="_blank" title="This link goes somewhere">IPFS Hash Browser</Link> <strong>and enter in this hash.</strong> </Text>: ""}
+          </Card>
+  </Card>
+  </div>
+);
+  }
 
 }
 
