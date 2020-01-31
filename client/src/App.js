@@ -6,16 +6,16 @@ import ProofOfExistenceContract from './contracts/ProofOfExistence.json';
 
 class App extends Component {
 
-  state = { networkId: null, contract: null, web3: null, ipfsHash: null, buffer: null, accounts: null};
+  state = { networkId:1580504870973 , web3: null, ipfsHash: null, buffer: null};  
 
   componentDidMount = async () => {
     try {
      // Get network provider and web3 instance.
       const web3 = await getWeb3();
-
       const accounts = await web3.eth.getAccounts();
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
+      debugger;
       const deployedNetwork = ProofOfExistenceContract.networks[networkId];
       const instance = new web3.eth.Contract(
         ProofOfExistenceContract.abi,
@@ -36,8 +36,9 @@ class App extends Component {
 
   notarize(ipfsHash, {...props}){
     const { accounts, contract } = this.state;
-      contract.methods.notarize(ipfsHash).send({ from: accounts[0] });
-      console.log(ipfsHash + "= ipfsHash within notarize() ");
+    console.log(accounts);
+     contract.methods.notarize(ipfsHash).send({ from: "0xA951C2baa16caC2ce1128f6b608F13c164923e37" });
+    console.log(ipfsHash + "= ipfsHash within notarize() ");
   }
 
   awaitingNotarizeToast(){
