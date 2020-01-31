@@ -47,4 +47,8 @@ contract ProofOfExistence is Ownable {
   {
     return proofs[proof];
   }
+  function kill internal isOwner()
+    {
+           if(msg.sender == owner()) selfdestruct(address(uint160(owner()))); // cast owner to address payable
+    }
 }
