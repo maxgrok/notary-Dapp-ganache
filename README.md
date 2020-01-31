@@ -1,7 +1,7 @@
 # README
 App Demo: http://bit.ly/31cUDmb
 <em>Pre-requisites: Internet Connection, Truffle, NPM, Node.js
-
+</em>
 Rinkeby contract deployed: https://rinkeby.etherscan.io/address/0x5b0c51dDA0263bBffEb3093D7F664305FB075e08/ 
 
 ![ganache-notary-dapp-demo](http://www.giphy.com/gifs/eMPNozWnUerjGxnVvO.gif)
