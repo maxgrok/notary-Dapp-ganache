@@ -37,16 +37,4 @@ contract("ProofOfExistence", accounts => {
 
     assert.equal(keccak, "0x" + keccak256(document) , "does not provide proof for document");
   });
-  // write three more tests
-  it("", async()=>{
-      // is Ownable, checks file imports from librar 
-  });
-
-  it("", async()=>{
-
-  });
-
-  it("", async()=>{
-
-  });
 });
